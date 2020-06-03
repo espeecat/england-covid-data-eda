@@ -6,7 +6,11 @@ https://coronavirus.data.gov.uk/
 
 Download json format. 
 
+### Sample Output  
+
 ![Sample of data](sample-images/brighton1.png?raw=true "Sample data")
+
+![Sample of data](sample-images/r-england.png?raw=true "Sample data")
 
 
 ## england-covid-data-eda
