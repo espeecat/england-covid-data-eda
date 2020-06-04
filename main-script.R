@@ -93,3 +93,4 @@ ggsave(
 #############################################
 # Estimate and plot R by week for each local authority (LA)
 plotsForRVals <- lapply(localLAs,FNplotR)
+

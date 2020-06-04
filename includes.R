@@ -20,6 +20,7 @@ FNplotting <- function(la) {
   p <- ggplot(data=subset_df, aes(date, dailyLabConfirmedCases)) +
   geom_col()+ggtitle(title) # for the main title
   p<-p + scale_x_date(date_breaks = "weeks", date_labels = "%d-%b")+xlab("Date") + ylab("Number of positive tests")+theme(title =element_text(size=7),axis.text.x = element_text(color = "grey20", size = 5, angle = 45, hjust = .5, vjust = .5, face = "plain"), panel.grid.minor = element_blank())
+  print(p)
   # save LA plot
   ggsave(
     path,
@@ -63,7 +64,7 @@ FNplotR <- function(la) {
   title <-paste('Estimated R value for',la)
   p <- ggplot(data=df, aes(x = date, y = `R value`))+geom_point() +ggtitle(title)+theme(title =element_text(size=7 ),   axis.text.x = element_text(color = "grey20", size = 8, angle = 45, hjust = .5, vjust = .5, face = "plain"),
                                                                                         panel.grid.minor = element_blank())
-  
+  print(p)
   # save LA plot
   ggsave(
     path,
