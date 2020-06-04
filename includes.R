@@ -12,12 +12,14 @@ FNplotting <- function(la) {
   # image filepath
   path<-paste("./",imagesFolder,"/local-authority-total-cases-",la,".png", sep="")
   # image title
-  title <-paste('Total positive test cases versus date for',la)
-  p <- ggplot(data=subset_df, aes(x = date, y = dailyLabConfirmedCases)) +
-    geom_line()+ggtitle(title) # for the main title
-  p<-p + scale_x_date(date_breaks = "days", date_labels = "%d-%b")+xlab("Date") + ylab("Number of positive tests")+theme(title =element_text(size=10, face='bold'),axis.text.x = element_text(color = "grey20", size = 5, angle = 45, hjust = .5, vjust = .5, face = "plain"),
-                                                                                                        panel.grid.minor = element_blank())
-  p
+  title <-paste('Positive test cases over time for',la)
+  #p <- ggplot(data=subset_df, aes(x = date, y = dailyLabConfirmedCases)) +
+  #  geom_line()+ggtitle(title) # for the main title
+  #p<-p + scale_x_date(date_breaks = "days", date_labels = "%d-%b")+xlab("Date") + ylab("Number of positive tests")+theme(title =element_text(size=10, face='bold'),axis.text.x = element_text(color = "grey20", size = 5, angle = 45, hjust = .5, vjust = .5, face = "plain"),
+  #                                                                                                      panel.grid.minor = element_blank())
+  p <- ggplot(data=subset_df, aes(date, dailyLabConfirmedCases)) +
+  geom_col()+ggtitle(title) # for the main title
+  p<-p + scale_x_date(date_breaks = "weeks", date_labels = "%d-%b")+xlab("Date") + ylab("Number of positive tests")+theme(title =element_text(size=7),axis.text.x = element_text(color = "grey20", size = 5, angle = 45, hjust = .5, vjust = .5, face = "plain"), panel.grid.minor = element_blank())
   # save LA plot
   ggsave(
     path,
@@ -36,17 +38,32 @@ FNplotting <- function(la) {
 
 # PLOT R value
 FNplotR <- function(la) {
-  # data is global var
-  # grab data by each LA
-  subset_df <- data[data$areaName == la,];
-  # image filepath
-  path<-paste("./",imagesFolder,"/local-authority-total-cases-",la,".png", sep="")
-  # image title
-  title <-paste('Total positive test cases versus date for',la)
-  p <- ggplot(data=subset_df, aes(x = date, y = dailyLabConfirmedCases)) +
-    geom_line()+ggtitle(title) # for the main title
-  p<-p + scale_x_date(date_breaks = "days", date_labels = "%d-%b")+xlab("Date") + ylab("Number of positive tests")+theme(axis.text.x = element_text(color = "grey20", size = 5, angle = 45, hjust = .5, vjust = .5, face = "plain"),
-                                                                                                                         panel.grid.minor = element_blank())
+  # R value plot by LA 
+  dfbyLA <- data[data$areaName == la,]
+  aggregateByDate<-aggregate(dfbyLA$dailyLabConfirmedCases, by=list(Category=dfbyLA$specimenDate), FUN=sum)
+  # Remove N/A and set to zero
+  aggregateByDate<-aggregateByDate %>%
+    fill(x)
+  aggregatesAsXTS <- as.xts(aggregateByDate$x,order.by=as.Date(aggregateByDate$Category))
+  weeklySum<-apply.weekly(aggregatesAsXTS ,sum)
+  
+  # length of x for finite difference
+  xlen=length(weeklySum[,1])
+  h<-seq(1,xlen)
+  
+  weeklyCumSum = cumsum(weeklySum[,1])
+  weeklyLNCumSum = log(cumsum(weeklySum[,1]))
+  r<-finite.differences(h, coredata(weeklyLNCumSum))
+  
+  #area="Brighton and Hove"
+  path<-paste("./",imagesFolder,"/R-value-for-",la,".png", sep="")
+  
+  df <-data.frame(index(weeklyLNCumSum), r)
+  colnames(df)<-c('date','R value')
+  title <-paste('Estimated R value for',la)
+  p <- ggplot(data=df, aes(x = date, y = `R value`))+geom_point() +ggtitle(title)+theme(title =element_text(size=7 ),   axis.text.x = element_text(color = "grey20", size = 8, angle = 45, hjust = .5, vjust = .5, face = "plain"),
+                                                                                        panel.grid.minor = element_blank())
+  
   # save LA plot
   ggsave(
     path,
@@ -61,6 +78,8 @@ FNplotR <- function(la) {
     limitsize = TRUE,
     
   )
+  
+
 }
 
 
