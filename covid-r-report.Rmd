@@ -13,7 +13,14 @@ library('xts')
 
 ```
 
-## R Markdown
+## Execute code 
+Run 
+```{r, eval=F, echo=T}
+main-script.R
+source("main-script.R")
+
+```
+## Positive test cases
 
 The positive test cases for each local authority (LA) are given.
 
@@ -38,7 +45,13 @@ plots <- lapply(localLAs,FNplotting)
 
 ```
 
-## The estimated R value for England is given
+## The estimated R value for England is given. This is based on  
+$R=\frac {d\ln(N)}{dt}$
+
+where ${ln(N)}$ is the natural log of the cumulative number of test cases. 
+
+This is taken from [wikipedia](https://en.wikipedia.org/wiki/Basic_reproduction_number#Estimation_methods) as a quick option; I'm sure it's not perfect.
+
 
 
 ```{r rvalengland, echo=FALSE}
@@ -96,7 +109,7 @@ ggsave(
 
 ```
 
-## The estimated R values for each LA are given
+## The estimated R value for each LA is given
 
 
 ```{r rvals, echo=FALSE}
